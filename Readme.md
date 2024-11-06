@@ -41,13 +41,23 @@ const userSchema = z.object({
   occupation: z.string()
 });
 ```
+## Screenshot
+
+Here's a screenshot of the tool in action:
+
+![ZOD Schema Generator Screenshot](image.png)
+
+## Try it out!
+
+You can try out the ZOD Schema Generator by visiting the [live demo page](https://valiantsin2021.github.io/schema-generator/).
+
 ## Contributing
 
 Contributions are welcome! If you have any ideas for new features or improvements, please open an issue or submit a pull request.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
 
 ## Acknowledgments
 
@@ -56,4 +66,4 @@ This project was built using the following dependencies:
 * ZOD: A TypeScript-first schema validation library.
 * HTML/CSS/JS: For building the standalone HTML page.
 
-I hope this helps! Let me know if you have any questions or need further assistance.
+Note: Replace `screenshot.png` with the actual screenshot file, and `https://example.com/zod-schema-generator` with the actual live demo page URL.
