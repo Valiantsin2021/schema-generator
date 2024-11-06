@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to Zod Schema Generator</title>
+    <script src="https://unpkg.com/prettier@2.3.2/standalone.js"></script>
+    <script src="https://unpkg.com/prettier@2.3.2/parser-babel.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .panel {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .panel h2 {
+            margin: 0 0 1rem 0;
+            color: #4a5568;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .textarea-container {
+            flex: 1;
+            min-height: 400px;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            height: 350px;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-family: monospace;
+            resize: vertical;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            padding: 1rem 0;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            min-width: 150px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .primary {
+            background-color: #4299e1;
+            color: white;
+        }
+
+        .secondary {
+            background-color: #48bb78;
+            color: white;
+        }
+
+        .error {
+            color: #e53e3e;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .panel {
+                margin-bottom: 1rem;
+            }
+
+            .textarea-container {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <h1>JSON to Zod Schema Generator</h1>
+
+        <div class="container">
+            <div class="panel">
+                <h2>Input JSON</h2>
+                <div class="textarea-container">
+                    <textarea id="jsonInput" placeholder="Paste your JSON here..."></textarea>
+                </div>
+                <div class="button-group">
+                    <button class="primary" onclick="generateSchema()">Generate Schema</button>
+                </div>
+                <div id="inputError" class="error"></div>
+            </div>
+
+            <div class="panel">
+                <h2>Generated Zod Schema</h2>
+                <div class="textarea-container">
+                    <textarea id="schemaOutput" readonly placeholder="Generated schema will appear here..."></textarea>
+                </div>
+                <div class="button-group">
+                    <button class="secondary" onclick="downloadSchema()">Download Schema</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateSchema() {
+            const jsonInput = document.getElementById('jsonInput');
+            const schemaOutput = document.getElementById('schemaOutput');
+            const inputError = document.getElementById('inputError');
+
+            try {
+                const data = JSON.parse(jsonInput.value);
+                inputError.textContent = '';
+                const schema = generateZodSchema(data);
+                schemaOutput.value = schema;
+            } catch (error) {
+                inputError.textContent = 'Invalid JSON: ' + error.message;
+                schemaOutput.value = '';
+            }
+        }
+
+        function generateZodSchema(obj, name = 'schema') {
+            const parse = (obj, seen) => {
+                switch (typeof obj) {
+                    case 'string':
+                        if (obj.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i)) {
+                            return 'z.string().uuid()'
+                        }
+                        if (obj.startsWith('http://') || obj.startsWith('https://')) {
+                            return 'z.string().url()'
+                        }
+                        if (obj.startsWith('data:')) {
+                            return 'z.string().url()'
+                        }
+                        if (obj.startsWith('mailto:')) {
+                            return 'z.string().email()'
+                        }
+                        const dateTimeSlashesRegex = /^(\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2})$/
+                        const dateTimeDashesRegex = /^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})$/
+                        const mmddyyyyRegex = /^(\d{2})(-|\/)(\d{2})(-|\/)(\d{4})$/
+                        const yyyymmddRegex = /^(\d{4})(-|\/)(\d{2})(-|\/)(\d{2})$/
+                        const timestampRegex = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z)$/
+                        const regexArr = [dateTimeSlashesRegex, dateTimeDashesRegex, mmddyyyyRegex, yyyymmddRegex, timestampRegex]
+                        const filtered = regexArr.filter((regex) => regex.test(obj))
+                        if (filtered.length === 1) {
+                            return 'z.coerce.date()'
+                        } else {
+                            return 'z.string().min(1)'
+                        }
+                    case 'number':
+                        return 'z.number()'
+                    case 'bigint':
+                        return 'z.number().int()'
+                    case 'boolean':
+                        return 'z.boolean()'
+                    case 'object':
+                        if (obj === null) {
+                            return 'z.null()'
+                        }
+                        if (obj instanceof Date) {
+                            return 'z.date()'
+                        }
+                        if (obj instanceof RegExp) {
+                            return 'z.regexp()'
+                        }
+                        if (seen.find((_obj) => Object.is(_obj, obj))) {
+                            throw 'Circular objects are not supported'
+                        }
+                        seen.push(obj)
+                        if (Array.isArray(obj)) {
+                            const options = obj.map((obj) => parse(obj, seen)).reduce((acc, curr) => (acc.includes(curr) ? acc : [...acc, curr]), [])
+                            if (options.length === 1) {
+                                return `z.array(${options[0]})`
+                            } else if (options.length > 1) {
+                                return `z.array(z.union([${options}]))`
+                            } else {
+                                return `z.array(z.unknown())`
+                            }
+                        }
+                        return `z.object({${Object.entries(obj).map(([k, v]) => `'${k}':${parse(v, seen)}`)}})`
+                    case 'undefined':
+                        return 'z.undefined()'
+                    case 'function':
+                        return 'z.function()'
+                    case 'symbol':
+                    default:
+                        return 'z.unknown()'
+                }
+            }
+            const formattedSchema = prettier.format(`import {z} from "zod"\n\nexport const ${name}=${parse(obj, [])}.required()`, {
+                parser: 'babel',
+                plugins: prettierPlugins,
+            });
+            return formattedSchema
+        }
+
+        function downloadSchema() {
+            const schema = document.getElementById('schemaOutput').value;
+            if (!schema) return;
+
+            const blob = new Blob([schema], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'schema.ts';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+
+</html>
