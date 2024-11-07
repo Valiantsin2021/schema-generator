@@ -31,6 +31,7 @@
                 </div>
                 <div class="flex justify-center mt-4 space-x-4">
                     <button class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-6 rounded" onclick="downloadSchema()">Download Schema</button>
+                    <button class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-6 rounded" id="clearBtn" onclick="copyInputs()">Copy</button>
                     <button class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-6 rounded" id="clearBtn" onclick="clearInputs()">Clear</button>
                 </div>
             </div>
@@ -149,6 +150,11 @@
                 document.getElementById('schemaOutput').value = '';
                 document.getElementById('jsonInput').value = '';
                 document.getElementById('inputError').textContent = '';
+            }
+            function copyInputs() {
+                const schemaOutput = document.getElementById('schemaOutput');
+                schemaOutput.select();
+                document.execCommand('copy');
             }
         </script>
 </body>
