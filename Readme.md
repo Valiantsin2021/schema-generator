@@ -4,6 +4,8 @@
 
 A standalone HTML page for generating ZOD schemas from API JSON responses.
 
+See it live: [https://valiantsin2021.github.io/schema-generator/](https://valiantsin2021.github.io/schema-generator/)
+
 ## Overview
 
 This project provides a simple and intuitive way to generate ZOD schemas from API JSON responses. With this tool, you can easily create schemas for your API responses, making it easier to validate and document your API.
