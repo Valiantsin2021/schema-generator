@@ -319,22 +319,23 @@
             { name: 'IPv6', regex: /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/, zod: 'z.string().ip({ version: "v6" })' },
             { name: 'CIDR', regex: /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[12][0-9]|3[0-2])$/, zod: 'z.string().cidr({ version: "v4" })' },
 
-            // Date/Time patterns - comprehensive date format support with regex
-            { name: 'ISO DateTime', regex: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$/, zod: "z.string().regex(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})?$/, 'Invalid ISO datetime')" },
-            { name: 'Date YYYY-MM-DD', regex: /^\d{4}-\d{2}-\d{2}$/, zod: "z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/, 'Invalid date (YYYY-MM-DD)')" },
-            { name: 'Date YYYY/MM/DD', regex: /^\d{4}\/\d{2}\/\d{2}$/, zod: "z.string().regex(/^\\d{4}\\/\\d{2}\\/\\d{2}$/, 'Invalid date (YYYY/MM/DD)')" },
-            { name: 'Date DD-MM-YYYY', regex: /^\d{2}-\d{2}-\d{4}$/, zod: "z.string().regex(/^\\d{2}-\\d{2}-\\d{4}$/, 'Invalid date (DD-MM-YYYY)')" },
-            { name: 'Date DD/MM/YYYY', regex: /^\d{2}\/\d{2}\/\d{4}$/, zod: "z.string().regex(/^\\d{2}\\/\\d{2}\\/\\d{4}$/, 'Invalid date (DD/MM/YYYY)')" },
-            { name: 'Date DD.MM.YYYY', regex: /^\d{2}\.\d{2}\.\d{4}$/, zod: "z.string().regex(/^\\d{2}\\.\\d{2}\\.\\d{4}$/, 'Invalid date (DD.MM.YYYY)')" },
-            { name: 'DateTime YYYY-MM-DD HH:MM:SS', regex: /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/, zod: "z.string().regex(/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/, 'Invalid datetime (YYYY-MM-DD HH:MM:SS)')" },
-            { name: 'DateTime DD/MM/YYYY HH:MM:SS', regex: /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/, zod: "z.string().regex(/^\\d{2}\\/\\d{2}\\/\\d{4} \\d{2}:\\d{2}:\\d{2}$/, 'Invalid datetime (DD/MM/YYYY HH:MM:SS)')" },
-            { name: 'DateTime DD-MM-YYYY HH:MM:SS', regex: /^\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}$/, zod: "z.string().regex(/^\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}$/, 'Invalid datetime (DD-MM-YYYY HH:MM:SS)')" },
-            { name: 'DateTime DD.MM.YYYY HH:MM:SS', regex: /^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2}$/, zod: "z.string().regex(/^\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}:\\d{2}$/, 'Invalid datetime (DD.MM.YYYY HH:MM:SS)')" },
-            { name: 'Time HH:MM:SS', regex: /^\d{2}:\d{2}:\d{2}(\.\d+)?$/, zod: "z.string().regex(/^\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?$/, 'Invalid time (HH:MM:SS)')" },
-            { name: 'Time HH:MM', regex: /^\d{2}:\d{2}$/, zod: "z.string().regex(/^\\d{2}:\\d{2}$/, 'Invalid time (HH:MM)')" },
+            // Date/Time patterns - comprehensive date format support
+            { name: 'ISO DateTime', regex: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$/, zod: 'coerce.date', isDate: true },
+            { name: 'Date YYYY-MM-DD', regex: /^\d{4}-\d{2}-\d{2}$/, zod: 'coerce.date', isDate: true },
+            { name: 'Date YYYY/MM/DD', regex: /^\d{4}\/\d{2}\/\d{2}$/, zod: 'coerce.date', isDate: true },
+            { name: 'Date DD-MM-YYYY', regex: /^\d{2}-\d{2}-\d{4}$/, zod: 'coerce.date', isDate: true },
+            { name: 'Date DD/MM/YYYY', regex: /^\d{2}\/\d{2}\/\d{4}$/, zod: 'coerce.date', isDate: true },
+            { name: 'Date DD.MM.YYYY', regex: /^\d{2}\.\d{2}\.\d{4}$/, zod: 'coerce.date', isDate: true },
+            { name: 'Date MM-DD-YYYY', regex: /^\d{2}-\d{2}-\d{4}$/, zod: 'coerce.date', isDate: true },
+            { name: 'DateTime YYYY-MM-DD HH:MM:SS', regex: /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/, zod: 'coerce.date', isDate: true },
+            { name: 'DateTime DD/MM/YYYY HH:MM:SS', regex: /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/, zod: 'coerce.date', isDate: true },
+            { name: 'DateTime DD-MM-YYYY HH:MM:SS', regex: /^\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}$/, zod: 'coerce.date', isDate: true },
+            { name: 'DateTime DD.MM.YYYY HH:MM:SS', regex: /^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2}$/, zod: 'coerce.date', isDate: true },
+            { name: 'Time HH:MM:SS', regex: /^\d{2}:\d{2}:\d{2}(\.\d+)?$/, zod: 'z.string().time()' },
+            { name: 'Time HH:MM', regex: /^\d{2}:\d{2}$/, zod: 'z.string().regex(/^\\d{2}:\\d{2}$/, "Invalid time format")' },
             { name: 'Duration ISO8601', regex: /^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$/, zod: 'z.string().duration()' },
-            { name: 'Unix Timestamp', regex: /^\d{10}$/, zod: "z.string().regex(/^\\d{10}$/, 'Unix timestamp')" },
-            { name: 'Unix Timestamp MS', regex: /^\d{13}$/, zod: "z.string().regex(/^\\d{13}$/, 'Unix timestamp (ms)')" },
+            { name: 'Unix Timestamp', regex: /^\d{10}$/, zod: 'z.string().regex(/^\\d{10}$/, "Unix timestamp")' },
+            { name: 'Unix Timestamp MS', regex: /^\d{13}$/, zod: 'z.string().regex(/^\\d{13}$/, "Unix timestamp (ms)")' },
 
             // Custom regex patterns
             { name: 'Phone', regex: /^\+?[1-9]\d{1,14}$/, zod: "z.string().regex(/^\\+?[1-9]\\d{1,14}$/, 'Invalid phone number')" },
@@ -365,6 +366,11 @@
 
                 if (pattern.regex.test(str)) {
                     detectedPatternsSet.add(pattern.name);
+
+                    // Handle date coercion
+                    if (pattern.isDate) {
+                        return config.coerceMode ? 'z.coerce.date()' : 'z.string().datetime()';
+                    }
                     return pattern.zod;
                 }
             }
