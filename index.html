@@ -10,6 +10,19 @@
     <script src="https://unpkg.com/prettier@2.3.2/standalone.js"></script>
     <script src="https://unpkg.com/prettier@2.3.2/parser-babel.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <script>
+        // Init theme early to prevent flash
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
     <style>
         .toggle-checkbox:checked {
             right: 0;
@@ -34,19 +47,39 @@
 </head>
 
 <body
-    class="font-sans bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen flex flex-col items-center p-8">
+    class="font-sans bg-gray-50 via-gray-100 to-gray-200 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen flex flex-col items-center p-8 transition-colors duration-200">
+    <div class="fixed top-4 right-4 z-50">
+        <button id="themeToggle" onclick="toggleTheme()"
+            class="p-2.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 transition-all shadow-lg">
+            <!-- Sun icon (for dark mode) -->
+            <svg id="themeIconSun" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h1a1 1 0 100 2h-1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                    fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+            <!-- Moon icon (for light mode) -->
+            <svg id="themeIconMoon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
     <div class="w-full max-w-7xl">
         <h1
-            class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 text-center mb-2">
+            class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-500 text-center mb-2">
             JSON to Zod Schema Generator
         </h1>
-        <p class="text-gray-400 text-center mb-8">Advanced schema generation with regex patterns, enums, and coercion
+        <p class="text-gray-600 dark:text-gray-400 text-center mb-8">Advanced schema generation with regex patterns,
+            enums, and coercion
         </p>
 
         <!-- Options Panel -->
-        <div class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-xl border border-gray-700 mb-8">
-            <h2 class="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2">
-                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div
+            class="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 mb-8 transition-colors duration-200">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-purple-500 dark:text-purple-400" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
                     </path>
@@ -61,15 +94,15 @@
                     <label class="flex items-center gap-2 cursor-pointer">
                         <div class="relative">
                             <input type="checkbox" id="strictMode"
-                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-gray-600 border-4 border-gray-600 appearance-none cursor-pointer transition-all duration-200" />
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 dark:border-gray-600 appearance-none cursor-pointer transition-all duration-200" />
                             <div
-                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-600 cursor-pointer">
+                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
                             </div>
                         </div>
-                        <span class="text-gray-300 text-sm">Strict Mode</span>
+                        <span class="text-gray-700 dark:text-gray-300 text-sm">Strict Mode</span>
                     </label>
                     <span
-                        class="tooltip absolute bg-gray-900 text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10">
+                        class="tooltip absolute bg-gray-800 dark:bg-gray-900 text-white dark:text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10 border border-gray-700 dark:border-transparent">
                         Add .strict() to objects
                     </span>
                 </div>
@@ -79,16 +112,16 @@
                     <label class="flex items-center gap-2 cursor-pointer">
                         <div class="relative">
                             <input type="checkbox" id="coerceMode"
-                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-gray-600 border-4 border-gray-600 appearance-none cursor-pointer transition-all duration-200"
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 dark:border-gray-600 appearance-none cursor-pointer transition-all duration-200"
                                 checked />
                             <div
-                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-600 cursor-pointer">
+                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
                             </div>
                         </div>
-                        <span class="text-gray-300 text-sm">Coerce Dates</span>
+                        <span class="text-gray-700 dark:text-gray-300 text-sm">Coerce Dates</span>
                     </label>
                     <span
-                        class="tooltip absolute bg-gray-900 text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10">
+                        class="tooltip absolute bg-gray-800 dark:bg-gray-900 text-white dark:text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10 border border-gray-700 dark:border-transparent">
                         Use z.coerce for dates
                     </span>
                 </div>
@@ -98,16 +131,16 @@
                     <label class="flex items-center gap-2 cursor-pointer">
                         <div class="relative">
                             <input type="checkbox" id="detectIntegers"
-                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-gray-600 border-4 border-gray-600 appearance-none cursor-pointer transition-all duration-200"
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 dark:border-gray-600 appearance-none cursor-pointer transition-all duration-200"
                                 checked />
                             <div
-                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-600 cursor-pointer">
+                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
                             </div>
                         </div>
-                        <span class="text-gray-300 text-sm">Detect Integers</span>
+                        <span class="text-gray-700 dark:text-gray-300 text-sm">Detect Integers</span>
                     </label>
                     <span
-                        class="tooltip absolute bg-gray-900 text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10">
+                        class="tooltip absolute bg-gray-800 dark:bg-gray-900 text-white dark:text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10 border border-gray-700 dark:border-transparent">
                         Use .int() for whole numbers
                     </span>
                 </div>
@@ -117,16 +150,16 @@
                     <label class="flex items-center gap-2 cursor-pointer">
                         <div class="relative">
                             <input type="checkbox" id="detectSign"
-                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-gray-600 border-4 border-gray-600 appearance-none cursor-pointer transition-all duration-200"
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 dark:border-gray-600 appearance-none cursor-pointer transition-all duration-200"
                                 checked />
                             <div
-                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-600 cursor-pointer">
+                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
                             </div>
                         </div>
-                        <span class="text-gray-300 text-sm">Detect Sign</span>
+                        <span class="text-gray-700 dark:text-gray-300 text-sm">Detect Sign</span>
                     </label>
                     <span
-                        class="tooltip absolute bg-gray-900 text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10">
+                        class="tooltip absolute bg-gray-800 dark:bg-gray-900 text-white dark:text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10 border border-gray-700 dark:border-transparent">
                         Detect positive/negative/nonnegative
                     </span>
                 </div>
@@ -136,15 +169,15 @@
                     <label class="flex items-center gap-2 cursor-pointer">
                         <div class="relative">
                             <input type="checkbox" id="nonemptyArrays"
-                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-gray-600 border-4 border-gray-600 appearance-none cursor-pointer transition-all duration-200" />
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 dark:border-gray-600 appearance-none cursor-pointer transition-all duration-200" />
                             <div
-                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-600 cursor-pointer">
+                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
                             </div>
                         </div>
-                        <span class="text-gray-300 text-sm">N/empty Arrays</span>
+                        <span class="text-gray-700 dark:text-gray-300 text-sm">N/empty Arrays</span>
                     </label>
                     <span
-                        class="tooltip absolute bg-gray-900 text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10">
+                        class="tooltip absolute bg-gray-800 dark:bg-gray-900 text-white dark:text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10 border border-gray-700 dark:border-transparent">
                         Add .nonempty() for arrays with items
                     </span>
                 </div>
@@ -154,15 +187,15 @@
                     <label class="flex items-center gap-2 cursor-pointer">
                         <div class="relative">
                             <input type="checkbox" id="passthroughMode"
-                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-gray-600 border-4 border-gray-600 appearance-none cursor-pointer transition-all duration-200" />
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 dark:border-gray-600 appearance-none cursor-pointer transition-all duration-200" />
                             <div
-                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-600 cursor-pointer">
+                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
                             </div>
                         </div>
-                        <span class="text-gray-300 text-sm">Passthrough</span>
+                        <span class="text-gray-700 dark:text-gray-300 text-sm">Passthrough</span>
                     </label>
                     <span
-                        class="tooltip absolute bg-gray-900 text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10">
+                        class="tooltip absolute bg-gray-800 dark:bg-gray-900 text-white dark:text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10 border border-gray-700 dark:border-transparent">
                         Allow extra properties
                     </span>
                 </div>
@@ -172,15 +205,15 @@
                     <label class="flex items-center gap-2 cursor-pointer">
                         <div class="relative">
                             <input type="checkbox" id="requiredMode"
-                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-gray-600 border-4 border-gray-600 appearance-none cursor-pointer transition-all duration-200" />
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 dark:border-gray-600 appearance-none cursor-pointer transition-all duration-200" />
                             <div
-                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-600 cursor-pointer">
+                                class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
                             </div>
                         </div>
-                        <span class="text-gray-300 text-sm">Required</span>
+                        <span class="text-gray-700 dark:text-gray-300 text-sm">Required</span>
                     </label>
                     <span
-                        class="tooltip absolute bg-gray-900 text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10">
+                        class="tooltip absolute bg-gray-800 dark:bg-gray-900 text-white dark:text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10 border border-gray-700 dark:border-transparent">
                         Add .required() to schema
                     </span>
                 </div>
@@ -190,9 +223,10 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Input Panel -->
             <div
-                class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-xl border border-gray-700 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10">
-                <h2 class="text-xl font-semibold text-gray-200 mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                         </path>
@@ -201,7 +235,7 @@
                 </h2>
                 <div class="h-96 relative">
                     <textarea id="jsonInput"
-                        class="w-full h-full p-4 bg-gray-900/80 border border-gray-600 rounded-lg font-mono text-sm text-gray-200 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-500"
+                        class="w-full h-full p-4 bg-gray-50 dark:bg-gray-900/80 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-sm text-gray-800 dark:text-gray-200 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
                         placeholder="Paste your JSON here..."></textarea>
                 </div>
                 <div class="flex justify-center mt-4 gap-4">
@@ -211,7 +245,7 @@
                         Generate Schema
                     </button>
                     <button
-                        class="bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300"
+                        class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300"
                         onclick="loadExample()">
                         Load Example
                     </button>
@@ -221,9 +255,10 @@
 
             <!-- Output Panel -->
             <div
-                class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-xl border border-gray-700 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/10">
-                <h2 class="text-xl font-semibold text-gray-200 mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/10">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-500 dark:text-purple-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
                     </svg>
@@ -231,7 +266,7 @@
                 </h2>
                 <div class="h-96 relative">
                     <textarea id="schemaOutput"
-                        class="w-full h-full p-4 bg-gray-900/80 border border-gray-600 rounded-lg font-mono text-sm text-green-400 resize-y cursor-text focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        class="w-full h-full p-4 bg-gray-50 dark:bg-gray-900/80 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-sm text-green-600 dark:text-green-400 resize-y cursor-text focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                         readonly placeholder="Generated schema will appear here..."></textarea>
                 </div>
                 <div class="flex justify-center mt-4 gap-3">
@@ -247,7 +282,7 @@
                         </span>
                     </button>
                     <button
-                        class="bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300"
+                        class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300"
                         onclick="copySchema()">
                         <span class="flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,7 +294,7 @@
                         </span>
                     </button>
                     <button
-                        class="bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300"
+                        class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300"
                         onclick="clearInputs()">
                         <span class="flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -276,9 +311,10 @@
 
         <!-- Detected Types Panel -->
         <div id="detectedTypesPanel"
-            class="hidden bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-xl border border-gray-700 mt-8">
-            <h2 class="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2">
-                <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="hidden bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 mt-8">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-yellow-500 dark:text-yellow-400" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
                     </path>
@@ -660,6 +696,17 @@
                 schemaOutput.select();
                 document.execCommand('copy');
             });
+        }
+    </script>
+    <script>
+        function toggleTheme() {
+            if (localStorage.theme === 'dark') {
+                localStorage.theme = 'light';
+                document.documentElement.classList.remove('dark');
+            } else {
+                localStorage.theme = 'dark';
+                document.documentElement.classList.add('dark');
+            }
         }
     </script>
 </body>
