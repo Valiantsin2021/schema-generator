@@ -182,21 +182,21 @@
                     </span>
                 </div>
 
-                <!-- Passthrough Mode -->
+                <!-- Optional Mode -->
                 <div class="has-tooltip relative">
                     <label class="flex items-center gap-2 cursor-pointer">
                         <div class="relative">
-                            <input type="checkbox" id="passthroughMode"
+                            <input type="checkbox" id="optionalMode"
                                 class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 dark:border-gray-600 appearance-none cursor-pointer transition-all duration-200" />
                             <div
                                 class="toggle-label block overflow-hidden h-6 w-12 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
                             </div>
                         </div>
-                        <span class="text-gray-700 dark:text-gray-300 text-sm">Passthrough</span>
+                        <span class="text-gray-700 dark:text-gray-300 text-sm">Optional</span>
                     </label>
                     <span
                         class="tooltip absolute bg-gray-800 dark:bg-gray-900 text-white dark:text-gray-200 text-xs rounded px-2 py-1 -top-8 left-0 whitespace-nowrap z-10 border border-gray-700 dark:border-transparent">
-                        Allow extra properties
+                        Add .optional() to schema
                     </span>
                 </div>
 
@@ -333,27 +333,26 @@
             detectIntegers: document.getElementById('detectIntegers').checked,
             detectSign: document.getElementById('detectSign').checked,
             nonemptyArrays: document.getElementById('nonemptyArrays').checked,
-            passthroughMode: document.getElementById('passthroughMode').checked,
+            optionalMode: document.getElementById('optionalMode').checked,
             requiredMode: document.getElementById('requiredMode').checked
         });
 
         // Pattern definitions for string type detection
         const stringPatterns = [
             // Built-in Zod validations
-            { name: 'UUID', regex: /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i, zod: 'z.string().uuid()' },
-            { name: 'Email', regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, zod: 'z.string().email()' },
-            { name: 'URL', regex: /^(https?:\/\/|data:)[^\s]+$/, zod: 'z.string().url()' },
-            { name: 'CUID', regex: /^c[a-z0-9]{24}$/, zod: 'z.string().cuid()' },
-            { name: 'CUID2', regex: /^[a-z][a-z0-9]{23}$/, zod: 'z.string().cuid2()' },
-            { name: 'ULID', regex: /^[0-7][0-9A-HJKMNP-TV-Z]{25}$/i, zod: 'z.string().ulid()' },
-            { name: 'NanoID', regex: /^[A-Za-z0-9_-]{21}$/, zod: 'z.string().nanoid()' },
-            { name: 'Base64', regex: /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/, zod: 'z.string().base64()', minLength: 16 },
-            { name: 'Emoji', regex: /^[\p{Emoji}]+$/u, zod: 'z.string().emoji()' },
+            { name: 'UUID', regex: /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i, zod: 'z.guid()' },
+            { name: 'Email', regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, zod: 'z.email()' },
+            { name: 'URL', regex: /^(https?:\/\/|data:)[^\s]+$/, zod: 'z.url()' },
+            { name: 'CUID', regex: /^c[a-z0-9]{24}$/, zod: 'z.cuid()' },
+            { name: 'CUID2', regex: /^[a-z][a-z0-9]{23}$/, zod: 'z.cuid2()' },
+            { name: 'ULID', regex: /^[0-7][0-9A-HJKMNP-TV-Z]{25}$/i, zod: 'z.ulid()' },
+            { name: 'NanoID', regex: /^[A-Za-z0-9_-]{21}$/, zod: 'z.nanoid()' },
+            { name: 'Base64', regex: /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/, zod: 'z.base64()', minLength: 16 },
+            { name: 'Emoji', regex: /^[\p{Extended_Pictographic}]+$/u, zod: 'z.emoji()' },
 
             // IP addresses
-            { name: 'IPv4', regex: /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/, zod: 'z.string().ip({ version: "v4" })' },
-            { name: 'IPv6', regex: /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/, zod: 'z.string().ip({ version: "v6" })' },
-            { name: 'CIDR', regex: /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[12][0-9]|3[0-2])$/, zod: 'z.string().cidr({ version: "v4" })' },
+            { name: 'IPv4', regex: /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/, zod: 'z.ipv4()' },
+            { name: 'IPv6', regex: /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/, zod: 'z.ipv6()' },
 
             // Date/Time patterns - comprehensive date format support with regex
             { name: 'ISO DateTime', regex: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$/, zod: "z.string().regex(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})?$/, 'Invalid ISO datetime')" },
@@ -373,7 +372,9 @@
             { name: 'Unix Timestamp MS', regex: /^\d{13}$/, zod: "z.string().regex(/^\\d{13}$/, 'Unix timestamp (ms)')" },
 
             // Custom regex patterns
-            { name: 'Phone', regex: /^\+?[1-9]\d{1,14}$/, zod: "z.string().regex(/^\\+?[1-9]\\d{1,14}$/, 'Invalid phone number')" },
+            { name: 'Phone', regex: /^\+?[1-9]\d{6,14}$/, zod: "z.string().regex(/^\\+?[1-9]\\d{6,14}$/, 'Invalid phone number')" },
+            { name: 'Decimal', regex: /^\d+\.\d+$/, zod: "z.string().regex(/^\\d+\\.\\d+$/)" },
+            { name: 'Numeric', regex: /^\d+$/, zod: "z.string().regex(/^\\d+$/)" },
             { name: 'Credit Card', regex: /^\d{13,19}$/, zod: "z.string().regex(/^\\d{13,19}$/, 'Invalid credit card number')" },
             { name: 'Hex Color', regex: /^#[0-9A-Fa-f]{6}$/, zod: "z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color')" },
             { name: 'Hex Color Short', regex: /^#[0-9A-Fa-f]{3}$/, zod: "z.string().regex(/^#[0-9A-Fa-f]{3}$/, 'Invalid hex color')" },
@@ -384,9 +385,8 @@
             { name: 'MAC Address', regex: /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/, zod: "z.string().regex(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/, 'Invalid MAC address')" },
             { name: 'Slug', regex: /^[a-z0-9]+(?:-[a-z0-9]+)*$/, zod: "z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid slug')" },
             { name: 'MongoDB ObjectId', regex: /^[0-9a-fA-F]{24}$/, zod: "z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid MongoDB ObjectId')" },
-            { name: 'Latitude', regex: /^-?([1-8]?\d(\.\d+)?|90(\.0+)?)$/, zod: "z.string().regex(/^-?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?)$/, 'Invalid latitude')" },
-            { name: 'Longitude', regex: /^-?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/, zod: "z.string().regex(/^-?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)$/, 'Invalid longitude')" },
-            { name: 'Country Code', regex: /^[A-Z]{2}$/, zod: "z.string().length(2).regex(/^[A-Z]{2}$/, 'Invalid country code')" },
+            { name: 'Latitude', regex: /^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$/, zod: "z.string().regex(/^-?([1-8]?\\d\\.\\d+|90\\.0+)$/, 'Invalid latitude')" },
+            { name: 'Longitude', regex: /^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$/, zod: "z.string().regex(/^-?(180\\.0+|((1[0-7]\\d)|([1-9]?\\d))\\.\\d+)$/, 'Invalid longitude')" },
             { name: 'Currency Code', regex: /^[A-Z]{3}$/, zod: "z.string().length(3).regex(/^[A-Z]{3}$/, 'Invalid currency code')" },
             { name: 'Locale', regex: /^[a-z]{2}(-[A-Z]{2})?$/, zod: "z.string().regex(/^[a-z]{2}(-[A-Z]{2})?$/, 'Invalid locale')" },
         ];
@@ -403,6 +403,19 @@
                     detectedPatternsSet.add(pattern.name);
                     return pattern.zod;
                 }
+            }
+
+
+
+            // Numeric String (fallback for non-matched numbers like "190")
+            if (/^\d+$/.test(str)) {
+                return `z.string().regex(/^\\d{${str.length}}$/)`;
+            }
+
+            // Decimal String (fallback for non-matched decimals like "12.34")
+            if (/^\d+\.\d+$/.test(str)) {
+                const decimalPart = str.split('.')[1];
+                return `z.string().regex(/^\\d+\\.\\d{${decimalPart.length}}$/)`;
             }
 
             // Default string with min length
@@ -541,8 +554,6 @@
 
                         if (config.strictMode) {
                             objectSchema += '.strict()';
-                        } else if (config.passthroughMode) {
-                            objectSchema += '.passthrough()';
                         }
 
                         return objectSchema;
@@ -564,7 +575,13 @@
             const schemaBody = parse(obj, []);
 
             // Add .required() if enabled
-            const finalSchema = config.requiredMode ? `${schemaBody}.required()` : schemaBody;
+            // Add .required() or .optional()
+            let finalSchema = schemaBody;
+            if (config.requiredMode) {
+                finalSchema += '.required()';
+            } else if (config.optionalMode) {
+                finalSchema += '.optional()';
+            }
 
             // Update detected patterns display
             updateDetectedPatternsDisplay();
@@ -595,7 +612,7 @@
             if (detectedPatternsSet.size > 0) {
                 panel.classList.remove('hidden');
                 container.innerHTML = [...detectedPatternsSet].map(pattern =>
-                    `<span class="px-3 py-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 rounded-full text-sm border border-blue-500/30">${pattern}</span>`
+                    `<span class="px-3 py-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 dark:text-blue-300 rounded-full text-sm border border-blue-500/30">${pattern}</span>`
                 ).join('');
             } else {
                 panel.classList.add('hidden');
