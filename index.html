@@ -239,18 +239,17 @@
                         placeholder="Paste your JSON here..."></textarea>
                 </div>
                 <div class="flex justify-center mt-4 gap-4">
-                    <button
-                        class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-2.5 px-8 rounded-lg shadow-lg shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
-                        onclick="generateSchema()">
+                    <button id="generator"
+                        class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-2.5 px-8 rounded-lg shadow-lg shadow-blue-500/25 transition-all duration-300 transform hover:scale-105" ">
                         Generate Schema
                     </button>
-                    <button
-                        class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300"
-                        onclick="loadExample()">
+                    <button id="example"
+                        class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300" ">
                         Load Example
                     </button>
                 </div>
-                <div id="inputError" class="text-red-400 mt-3 text-center text-sm"></div>
+                <div id="inputError" class="text-red-400 mt-3 text-center text-sm">
+                </div>
             </div>
 
             <!-- Output Panel -->
@@ -270,9 +269,8 @@
                         readonly placeholder="Generated schema will appear here..."></textarea>
                 </div>
                 <div class="flex flex-col sm:flex-row justify-center mt-4 gap-3">
-                    <button
-                        class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium py-2.5 px-6 rounded-lg shadow-lg shadow-green-500/25 transition-all duration-300 transform hover:scale-105"
-                        onclick="downloadSchema()">
+                    <button id="download"
+                        class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium py-2.5 px-6 rounded-lg shadow-lg shadow-green-500/25 transition-all duration-300 transform hover:scale-105">
                         <span class="flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -281,9 +279,8 @@
                             Download
                         </span>
                     </button>
-                    <button
-                        class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300"
-                        onclick="copySchema()">
+                    <button id="copy"
+                        class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300">
                         <span class="flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -293,9 +290,8 @@
                             Copy
                         </span>
                     </button>
-                    <button
-                        class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300"
-                        onclick="clearInputs()">
+                    <button id="clear"
+                        class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300">
                         <span class="flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -325,7 +321,9 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { jsonSchemaToZod } from 'https://cdn.jsdelivr.net/npm/json-schema-to-zod@latest/+esm';
+
         // Configuration object for schema generation
         const getConfig = () => ({
             strictMode: document.getElementById('strictMode').checked,
@@ -466,6 +464,11 @@
         }
 
         function generateZodSchema(obj, name = 'schema') {
+            if (obj.hasOwnProperty('properties') && typeof obj.properties === 'object') {
+                const schema = jsonSchemaToZod(obj)
+                console.log('Generated schema from JSON Schema:', schema);
+                return schema ? `import { z } from "zod";\n\nexport const ${name} = ${schema.toString()};` : null;
+            }
             const config = getConfig();
             detectedPatternsSet = new Set();
 
@@ -714,6 +717,13 @@
                 document.execCommand('copy');
             });
         }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('generator').addEventListener('click', generateSchema);
+            document.getElementById('example').addEventListener('click', loadExample);
+            document.getElementById('download').addEventListener('click', downloadSchema);
+            document.getElementById('copy').addEventListener('click', copySchema);
+            document.getElementById('clear').addEventListener('click', clearInputs);
+        });
     </script>
     <script>
         function toggleTheme() {

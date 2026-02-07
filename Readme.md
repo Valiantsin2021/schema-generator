@@ -12,8 +12,7 @@ This project provides a simple and intuitive way to generate ZOD schemas from AP
 
 ## Features
 
-* Generate ZOD schemas from API JSON responses
-* Supports multiple schema formats (e.g. JSON, YAML)
+* Generate ZOD schemas from API JSON responses or from JSON schemas
 * Easy-to-use interface for customizing schema generation
 
 ## Usage
