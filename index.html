@@ -466,8 +466,22 @@
         function generateZodSchema(obj, name = 'schema') {
             if (obj.hasOwnProperty('properties') && typeof obj.properties === 'object') {
                 const schema = jsonSchemaToZod(obj)
-                console.log('Generated schema from JSON Schema:', schema);
-                return schema ? `import { z } from "zod";\n\nexport const ${name} = ${schema.toString()};` : null;
+                try {
+                const formattedSchema = prettier.format(
+                    `import { z } from "zod";\n\nexport const ${name} = ${schema};`,
+                    {
+                        parser: 'babel',
+                        plugins: prettierPlugins,
+                        printWidth: 80,
+                        tabWidth: 2,
+                        semi: true,
+                        singleQuote: true,
+                    }
+                );
+                return formattedSchema;
+                } catch (e) {
+                return `import { z } from "zod";\n\nexport const ${name} = ${schema};`;
+                }
             }
             const config = getConfig();
             detectedPatternsSet = new Set();
