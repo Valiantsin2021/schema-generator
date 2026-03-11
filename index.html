@@ -245,12 +245,12 @@
                         class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-2.5 px-8 rounded-lg shadow-lg shadow-blue-500/25 transition-all duration-300 transform hover:scale-105" ">
                         Generate Schema
                     </button>
-                    <button id=" example"
+                    <button id="example"
                         class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-all duration-300" ">
                         Load Example
                     </button>
                 </div>
-                <div id=" inputError" class="text-red-400 mt-3 text-center text-sm">
+                <div id="inputError" class="text-red-400 mt-3 text-center text-sm">
                 </div>
             </div>
 
@@ -355,7 +355,7 @@
             { name: 'IPv6', regex: /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/, zod: 'z.ipv6()' },
 
             // Date/Time patterns - comprehensive date format support with regex
-            { name: 'ISO DateTime', regex: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$/, zod: "z.string().regex(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})?$/, 'Invalid ISO datetime')" },
+            { name: 'ISO DateTime', regex: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$/, zod: "z.iso.datetime()" }, //z.string().regex(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})?$/, 'Invalid ISO datetime')
             { name: 'Date YYYY-MM-DD', regex: /^\d{4}-\d{2}-\d{2}$/, zod: "z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/, 'Invalid date (YYYY-MM-DD)')" },
             { name: 'Date YYYY/MM/DD', regex: /^\d{4}\/\d{2}\/\d{2}$/, zod: "z.string().regex(/^\\d{4}\\/\\d{2}\\/\\d{2}$/, 'Invalid date (YYYY/MM/DD)')" },
             { name: 'Date DD-MM-YYYY', regex: /^\d{2}-\d{2}-\d{4}$/, zod: "z.string().regex(/^\\d{2}-\\d{2}-\\d{4}$/, 'Invalid date (DD-MM-YYYY)')" },
